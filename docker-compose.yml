@@ -1,0 +1,52 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+
+  redis:
+    image: redis:latest
+    depends_on:
+      - worker
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    stdin_open: true
+    volumes:
+      - /usr/app/node_modules
+      - ./server:/usr/app
+    environment:
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_DATABASE=postgres
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    stdin_open: true
+    volumes:
+      - /usr/app/node_modules
+      - ./client:/usr/app
+    depends_on:
+      - server
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.dev
+    stdin_open: true
+    volumes:
+      - /usr/app/node_modules
+      - ./worker:/usr/app
