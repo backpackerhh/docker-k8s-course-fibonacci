@@ -11,6 +11,18 @@ services:
     depends_on:
       - worker
 
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    restart: always
+    stdin_open: true
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+      - client
+
   api:
     build:
       context: ./server
