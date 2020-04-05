@@ -62,3 +62,6 @@ services:
     volumes:
       - /usr/app/node_modules
       - ./worker:/usr/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
